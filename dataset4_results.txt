@@ -1,0 +1,23 @@
+--- Decision Tree Results ---
+Max Depth: 1        => Accuracy: 0.8637, F1: 0.8636
+Max Depth: 2        => Accuracy: 0.8591, F1: 0.8590
+Max Depth: 3        => Accuracy: 0.8284, F1: 0.8276
+Max Depth: 5        => Accuracy: 0.8224, F1: 0.8214
+Max Depth: 7        => Accuracy: 0.8163, F1: 0.8155
+Max Depth: 9        => Accuracy: 0.8209, F1: 0.8202
+Evaluating Random Forest...
+--- Random Forest Results ---
+ntrees=1 => Accuracy: 0.7825, F1: 0.7821
+ntrees=5 => Accuracy: 0.8377, F1: 0.8375
+ntrees=10 => Accuracy: 0.8407, F1: 0.8404
+ntrees=20 => Accuracy: 0.8576, F1: 0.8573
+ntrees=30 => Accuracy: 0.8591, F1: 0.8591
+ntrees=40 => Accuracy: 0.8514, F1: 0.8512
+Evaluating Neural Network...
+--- Neural Network Results ---
+HP 0: {'epochs': 10, 'LN': [10, 2], 'alpha': 0.1, 'lambda_reg': 0.01, 'mb_size': 32} => Accuracy: 0.8131, F1: 0.8114
+HP 1: {'epochs': 25, 'LN': [10, 2], 'alpha': 0.1, 'lambda_reg': 0.01, 'mb_size': 32} => Accuracy: 0.8483, F1: 0.8481
+HP 2: {'epochs': 50, 'LN': [10, 2], 'alpha': 0.1, 'lambda_reg': 0.01, 'mb_size': 32} => Accuracy: 0.8652, F1: 0.8652
+HP 3: {'epochs': 100, 'LN': [10, 2], 'alpha': 0.1, 'lambda_reg': 0.01, 'mb_size': 32} => Accuracy: 0.8591, F1: 0.8593
+HP 4: {'epochs': 150, 'LN': [10, 2], 'alpha': 0.1, 'lambda_reg': 0.01, 'mb_size': 32} => Accuracy: 0.8591, F1: 0.8592
+HP 5: {'epochs': 250, 'LN': [10, 2], 'alpha': 0.1, 'lambda_reg': 0.01, 'mb_size': 32} => Accuracy: 0.8576, F1: 0.8577
