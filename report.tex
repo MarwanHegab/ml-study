@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\graphicspath{{figures/}}
 \usepackage[table,xcdraw]{xcolor}
 \usepackage{geometry}
 \geometry{a4paper, margin=1in}
@@ -97,25 +98,25 @@ Below are the learning curves for the three evaluated algorithms.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset1_knn_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset1_knn_acc.png}
     \caption{k-NN Learning Curve: Accuracy vs. $k$}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset1_rf_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset1_rf_acc.png}
     \caption{Random Forest Learning Curve: Accuracy vs. Number of Trees}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset1_nn_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset1_nn_acc.png}
     \caption{Neural Network Bar Chart: Accuracy vs. Hyperparameter Setting}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset1_nn_cost.png}
+    \includegraphics[width=0.6\textwidth]{dataset1_nn_cost.png}
     \caption{Neural Network Learning Curve: Cost $J$ vs. Training Instances Presented}
 \end{figure}
 
@@ -123,9 +124,219 @@ Below are the learning curves for the three evaluated algorithms.
 - The k-NN algorithm achieved the highest overall performance on Dataset 1 with an accuracy of $98.94\%$. In the domain of handwritten digit recognition, image samples of the exact same digit map very closely to each other in Euclidean space because their dark pixels heavily overlap. This results in tight, highly predictive spatial clusters, making k-NN heavily effective, specifically when $k$ is small ($k=1$ or $k=3$).
 
 - The Random Forest's performance steadily improved as the number of trees grew to 30, capturing the non-linear relationships between individual pixel intensities and the 10 target classes. The Neural Network performed best with a higher learning rate ($\alpha=0.5$), suggesting that the digit classification task has a relatively smooth loss landscape that benefits from larger gradient steps. Smaller learning rates (e.g., $\alpha=0.01$) converged too slowly within the fixed 250 epochs, while stronger regularization ($\lambda=0.1$) slightly over-constrained the weights, reducing expressiveness on a 10-class problem.
+\newpage
+
+\subsection{Dataset 2: The Oxford Parkinson's Disease Detection Dataset}
+
+\subsubsection{Hyperparameter Tuning}
+
+At least 6 different hyperparameter settings were used for each algorithm. The performance was evaluated using Stratified 10-Fold Cross-Validation, measuring both Accuracy and F1-Score (Macro).
+The results averaged across the 10 folds are shown below:
+
+\vspace{0.25cm}
+\textbf{1. Decision Tree:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hyperparameter ($max\_depth$)} & \textbf{Accuracy} & \textbf{F1-Score} \\ \hline
+$max\_depth = 2$ & 0.8400 & 0.7861 \\ \hline
+$max\_depth = 4$ & \textbf{0.8445} & \textbf{0.7898} \\ \hline
+$max\_depth = 6$ & \textbf{0.8445} & \textbf{0.7898} \\ \hline
+$max\_depth = 8$ & \textbf{0.8445} & \textbf{0.7898} \\ \hline
+$max\_depth = 10$ & \textbf{0.8445} & \textbf{0.7898} \\ \hline
+$max\_depth = 15$ & \textbf{0.8445} & \textbf{0.7898} \\ \hline
+\end{tabular}
+\end{table}
+\noindent The optimal hyperparameter for the Decision Tree on this dataset is $max\_depth = 4$, as the tree reaches its maximum structural growth at this point.
+
+\subsubsection{Learning Curves and Analysis}
+
+Below is the learning curve for the evaluated Decision Tree algorithm.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{decisiontreepark.png}
+    \caption{Decision Tree For Parkinson}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{Analysis and Interpretation:}
+The Decision Tree shows an initial improvement in both Accuracy and F1-Score from depth 2 to depth 4, but subsequently plateaus perfectly for all depths greater than 4. This flatline behavior is a direct result of our custom algorithm's early stopping criteria (halting splits when a node achieves $\ge$ 85\% class purity). Because the Parkinson's dataset is relatively small (195 instances) and the continuous features were categorized into 5 bins, the tree rapidly achieves pure leaf nodes by depth 4. Allowing the tree a deeper $max\_depth$ allowance does not force it to grow further. Furthermore, the visible gap between the Accuracy (~84.45\%) and the F1-Score (~78.98\%) accurately reflects the inherent class imbalance in the dataset, where the model performs slightly worse on the minority "healthy" class.
+
+\vspace{0.25cm}
+\textbf{2. k-Nearest Neighbors (k-NN):}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hyperparameter ($k$)} & \textbf{Accuracy} & \textbf{F1-Score} \\ \hline
+$k = 1$ & \textbf{0.9630} & \textbf{0.9290} \\ \hline
+$k = 3$ & 0.9380 & 0.8740 \\ \hline
+$k = 5$ & 0.9330 & 0.8570 \\ \hline
+$k = 7$ & 0.9290 & 0.8380 \\ \hline
+$k = 9$ & 0.8980 & 0.7770 \\ \hline
+$k = 11$ & 0.9030 & 0.7840 \\ \hline
+\end{tabular}
+\end{table}
+\noindent The optimal hyperparameter for k-NN on the Parkinson's dataset is $k = 1$.
+
+\subsubsection*{k-NN Learning Curve and Analysis}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1\linewidth]{parkinsonsknn.png}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{Analysis and Interpretation:}
+Unlike many datasets where $k=1$ causes severe overfitting, the k-NN algorithm performed exceptionally well at $k=1$ for the Parkinson's dataset, achieving over 96\% accuracy and a 92\% F1-Score. As $k$ increases, performance steadily declines. This suggests that the continuous voice measurement attributes form very tight, distinct local clusters in Euclidean space. By increasing $k$ to 9 or 11, the algorithm is forced to look too far outward, pulling in instances from the opposing class. Because the dataset is highly imbalanced (far more Parkinson's patients than healthy ones), increasing $k$ naturally biases the model toward the majority class, which explains why the F1-Score drops off much steeper than Accuracy.
+
+\vspace{0.25cm}
+\textbf{3. Random Forest:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hyperparameter (\# of Trees)} & \textbf{Accuracy} & \textbf{F1-Score} \\ \hline
+$trees = 1$ & 0.7850 & 0.7810 \\ \hline
+$trees = 5$ & 0.8780 & 0.8730 \\ \hline
+$trees = 10$ & 0.8780 & 0.8760 \\ \hline
+$trees = 20$ & 0.9190 & 0.9140 \\ \hline
+$trees = 30$ & \textbf{0.9240} & \textbf{0.9220} \\ \hline
+$trees = 40$ & 0.9140 & 0.9100 \\ \hline
+$trees = 50$ & 0.8990 & 0.8910 \\ \hline
+\end{tabular}
+\end{table}
+\noindent The optimal hyperparameter for the Random Forest on the Parkinson's dataset is $trees=30$.
+
+\subsubsection*{Random Forest Learning Curves and Analysis}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{parkinsons_Accuracy.png}
+    \caption{Accuracy}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{parkinsons_F1_Score.png}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{Analysis and Interpretation:}
+The Random Forest ensemble shows a distinct performance trajectory on the Parkinson's dataset. A single tree suffers from high variance, yielding our lowest accuracy (~78.50\%). As we introduce bootstrapping and feature subsetting with 5 to 20 trees, the ensemble rapidly stabilizes and accuracy climbs dramatically. The model reaches its absolute peak at $trees=30$ with an Accuracy of roughly 92.40\% and an F1-Score of 92.20\%. 
+
+Interestingly, as the number of trees increases further to 40 and 50, we see a noticeable degradation in performance (dropping back down to ~89.90\% accuracy). Because the Parkinson's dataset is quite small (only 195 instances), creating too many trees likely results in highly correlated, redundant decision branches across the bootstrapped samples. This over-complicates the voting process and introduces noise, proving that for smaller datasets, a moderately sized forest (around 30 trees) perfectly balances variance reduction without over-saturating the ensemble.
+
+\subsection{Dataset 3: The Rice Grains Dataset}
 
 
+\textbf{Algorithm Selection Rationale:}
+The Decision Tree was chosen to see how well it could separate the two species of rice grains using purely continuous morphological features that were discretized into 5 bins. [Insert Second Algorithm] was selected to compare performance and capture potential complex relationships that a simple discretized Decision Tree might miss.
 
+\subsubsection{Hyperparameter Tuning}
+
+At least 6 different hyperparameter settings were used for each algorithm. The performance was evaluated using Stratified 10-Fold Cross-Validation, measuring both Accuracy and F1-Score (Weighted).
+The results averaged across the 10 folds are shown below:
+
+\vspace{0.25cm}
+\textbf{1. Decision Tree:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hyperparameter ($max\_depth$)} & \textbf{Accuracy} & \textbf{F1-Score} \\ \hline
+$max\_depth = 2$ & 0.9228 & 0.9205 \\ \hline
+$max\_depth = 4$ & 0.9181 & 0.9163 \\ \hline
+$max\_depth = 6$ & 0.9234 & 0.9217 \\ \hline
+$max\_depth = 8$ & \textbf{0.9239} & \textbf{0.9223} \\ \hline
+$max\_depth = 10$ & \textbf{0.9239} & \textbf{0.9223} \\ \hline
+$max\_depth = 15$ & \textbf{0.9239} & \textbf{0.9223} \\ \hline
+\end{tabular}
+\end{table}
+\noindent The optimal hyperparameter for the Decision Tree on this dataset is $max\_depth = 8$, as performance plateaus beyond this point.
+
+
+\subsubsection{Learning Curves and Analysis}
+
+Below are the learning curves for the evaluated algorithms.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1\linewidth]{decisiontreerice.png}
+    \caption{Decision Tree for Rice}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\textbf{Analysis and Interpretation:}
+For the Decision Tree, accuracy starts strong at depth 2 (92.28 percent), dips slightly at depth 4, and then climbs to a strict plateau of 92.39 percent from depth 8 onward. Because this dataset contains purely numerical morphological attributes (like area and major axis length), binning them into categorical ranges allowed the Decision Tree to make effective early splits. The initial high performance at a shallow depth suggests that one or two continuous features (once binned) are highly distinct between the Cammeo and Osmancik species. The dip at depth 4 likely represents the tree beginning to split on noisier, less correlative bins, before deeper branches (depth 8) manage to correctly isolate those edge cases, resulting in the final plateau.
+
+\vspace{0.25cm}
+\textbf{2. k-Nearest Neighbors (k-NN):}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hyperparameter ($k$)} & \textbf{Accuracy} & \textbf{F1-Score} \\ \hline
+$k = 1$ & 0.8905 & 0.9040 \\ \hline
+$k = 3$ & 0.9100 & 0.9215 \\ \hline
+$k = 5$ & 0.9175 & 0.9280 \\ \hline
+$k = 7$ & 0.9218 & 0.9318 \\ \hline
+$k = 9$ & 0.9235 & 0.9335 \\ \hline
+$k = 11$ & \textbf{0.9250} & \textbf{0.9350} \\ \hline
+\end{tabular}
+\end{table}
+\noindent The optimal hyperparameter for k-NN on the Rice dataset is $k = 11$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{KnnACCandF1.png}
+    \caption{Enter Caption}
+    \label{fig:placeholder}
+\end{figure}
+
+\noindent \textbf{k-NN Analysis:}
+The k-NN algorithm exhibits a very smooth, logarithmic-style learning curve on this dataset. At $k=1$, the model is highly sensitive to local noise or slightly overlapping morphological features between the Cammeo and Osmancik species, resulting in its lowest performance (roughly 89\% accuracy). As the number of neighbors ($k$) increases, the decision boundary becomes smoother and more robust, effectively filtering out the noise. Performance steadily climbs and begins to asymptote around $k=9$ and $k=11$, reaching an impressive peak F1-Score of about 93.50\%. Because the dataset consists entirely of continuous numerical features (like area and major axis length), the normalized Euclidean distance serves as a highly effective metric for distinguishing the two species when a sufficiently large neighborhood is considered.
+
+\vspace{0.25cm}
+\textbf{2. Random Forest:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hyperparameter (\# of Trees)} & \textbf{Accuracy} & \textbf{F1-Score} \\ \hline
+$trees = 1$ & 0.7890 & 0.7880 \\ \hline
+$trees = 5$ & 0.8390 & 0.8390 \\ \hline
+$trees = 10$ & 0.8490 & 0.8490 \\ \hline
+$trees = 20$ & 0.8580 & 0.8580 \\ \hline
+$trees = 30$ & \textbf{0.8650} & \textbf{0.8650} \\ \hline
+$trees = 40$ & 0.8620 & 0.8620 \\ \hline
+$trees = 50$ & 0.8590 & 0.8590 \\ \hline
+\end{tabular}
+\end{table}
+\noindent The optimal hyperparameter for the Random Forest on this dataset is $trees=30$.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Credit_Approval_Accuracy.png}
+    \caption{Accuracy}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Credit_Approval_F1_Score.png}
+    \caption{F1}
+    \label{fig:placeholder}
+\end{figure}
+
+\noindent \textbf{Random Forest Analysis:}
+The Random Forest ensemble shows a beautiful, expected learning curve. At just 1 tree, the model's accuracy is heavily bottlenecked by variance, sitting around 78.90\%. As we increase the number of trees in the ensemble, the bootstrapping and feature sampling drastically reduce this variance, causing performance to climb steadily. It reaches its peak at 30 trees with an Accuracy and F1-Score of 86.50\%. Interestingly, pushing the forest to 40 and 50 trees results in a slight dip in performance (down to roughly 85.90\%). This slight degradation indicates that adding too many trees to this specific dataset begins to introduce redundant, noisy votes that slightly dilute the optimal decision boundaries found at $trees=30$.
 
 \newpage
 
@@ -208,25 +419,25 @@ Below are the learning curves for the three evaluated algorithms.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset4_dt_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset4_dt_acc.png}
     \caption{Decision Tree Learning Curve: Accuracy vs. $max\_depth$}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset4_rf_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset4_rf_acc.png}
     \caption{Random Forest Learning Curve: Accuracy vs. Number of Trees}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset4_nn_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset4_nn_acc.png}
     \caption{Neural Network Learning Curve: Accuracy vs. Epochs}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset4_nn_cost.png}
+    \includegraphics[width=0.6\textwidth]{dataset4_nn_cost.png}
     \caption{Neural Network Learning Curve: Cost $J$ vs. Training Instances Presented}
 \end{figure}
 
@@ -333,25 +544,25 @@ Below are the learning curves for the three evaluated algorithms.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset5_dt_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset5_dt_acc.png}
     \caption{Decision Tree Learning Curve: Accuracy vs. $max\_depth$}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset5_rf_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset5_rf_acc.png}
     \caption{Random Forest Learning Curve: Accuracy vs. Number of Trees}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset5_nn_acc.png}
+    \includegraphics[width=0.6\textwidth]{dataset5_nn_acc.png}
     \caption{Neural Network Learning Curve: Accuracy vs. Epochs}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/dataset5_nn_cost.png}
+    \includegraphics[width=0.6\textwidth]{dataset5_nn_cost.png}
     \caption{Neural Network Learning Curve: Cost $J$ vs. Training Instances Presented}
 \end{figure}
 
@@ -434,13 +645,13 @@ Shown below is the learning curve of this hybrid ensemble as evaluated on the Pa
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/hybrid_parkinsons_acc.png}
+    \includegraphics[width=0.6\textwidth]{hybrid_parkinsons_acc.png}
     \caption{Learning Curve on Parkinson's Dataset: Accuracy vs. Hyperparameter $n$}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/hybrid_rice_acc.png}
+    \includegraphics[width=0.6\textwidth]{hybrid_rice_acc.png}
     \caption{Learning Curve on Parkinson's Dataset: Accuracy vs. Hyperparameter $n$}
 \end{figure}
 
@@ -465,16 +676,15 @@ The table below summarizes the best performance achieved by each algorithm on th
 \hline
  & \multicolumn{2}{c|}{\textbf{Dataset 1}} & \multicolumn{2}{c|}{\textbf{Dataset 2}} & \multicolumn{2}{c|}{\textbf{Dataset 3}} & \multicolumn{2}{c|}{\textbf{Dataset 4}} & \multicolumn{2}{c|}{\textbf{Dataset 5}} \\ \hline
  & \textbf{Accuracy} & \textbf{F1-Score} & \textbf{Accuracy} & \textbf{F1-Score} & \textbf{Accuracy} & \textbf{F1-Score} & \textbf{Accuracy} & \textbf{F1-Score} & \textbf{Accuracy} & \textbf{F1-Score} \\ \hline
-\textbf{k-NN} & \cellcolor[HTML]{C0C0C0}0.9894 & \cellcolor[HTML]{C0C0C0}0.9894 & & & & & & & & \\ \hline
-\textbf{Decision Tree} & & & & & & & 0.8637 & 0.8636 & 0.5020 & 0.4985 \\ \hline
-\textbf{Random Forest} & 0.9722 & 0.9721 & & & & & 0.8591 & 0.8591 & 0.7020 & 0.6957 \\ \hline
+\textbf{k-NN} & \cellcolor[HTML]{C0C0C0}0.9894 & \cellcolor[HTML]{C0C0C0}0.9894 & \cellcolor[HTML]{C0C0C0}0.9630 & \cellcolor[HTML]{C0C0C0}0.9290 & 0.9250 & 0.9350 & & & & \\ \hline
+\textbf{Decision Tree} & & & 0.8445 & 0.7898 & 0.9239 & 0.9223 & 0.8637 & 0.8636 & 0.5020 & 0.4985 \\ \hline
+\textbf{Random Forest} & 0.9722 & 0.9721 & 0.9240 & 0.9220 & 0.9252 & 0.9252 & 0.8591 & 0.8591 & 0.7020 & 0.6957 \\ \hline
 \textbf{Neural Network} & 0.9750 & 0.9749 & & & & & \cellcolor[HTML]{C0C0C0}0.8652 & \cellcolor[HTML]{C0C0C0}0.8652 & \cellcolor[HTML]{C0C0C0}0.7440 & \cellcolor[HTML]{C0C0C0}0.7410 \\ \hline
-\textbf{kNN-DT Ensemble} & & & 0.8816 & 0.8607 & 0.9370 & 0.9370 & & & & \\ \hline
+\textbf{kNN-DT Ensemble} & & & 0.8816 & 0.8607 & \cellcolor[HTML]{C0C0C0}0.9370 & \cellcolor[HTML]{C0C0C0}0.9370 & & & & \\ \hline
 \end{tabular}%
 }
 \caption{Overall Performance Summary Table}
 \end{table}
-
 
 
 
