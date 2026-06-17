@@ -49,6 +49,9 @@ Highlights:
 ## Getting started
 
 ```bash
+git clone https://github.com/MarwanHegab/ml-study.git
+cd ml-study
+
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
